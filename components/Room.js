@@ -113,7 +113,6 @@ export default function Room(props) {
         height="200px"
         autoPlay="true"
         controls={false}
-        muted
       />
     </div>
   );
