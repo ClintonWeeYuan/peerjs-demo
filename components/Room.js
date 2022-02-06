@@ -54,7 +54,6 @@ export default function Room(props) {
     peer.on("call", async function (call) {
       console.log("Someone is attempting to call you");
       const stream = await getMedia();
-      currentUserVideoRef.current.srcObject = stream;
       call.answer(stream);
       call.on("stream", function (remoteStream) {
         remoteUserVideoRef.current.srcObject = remoteStream;
