@@ -71,19 +71,6 @@ export default function Room(props) {
     call.on("stream", function (remoteStream) {
       remoteUserVideoRef.current.srcObject = remoteStream;
     });
-
-    navigator.mediaDevices.getUserMedia(
-      { video: true, audio: true },
-      function (stream) {
-        const call = peerInstance.current.call(remotePeerId, stream);
-        call.on("stream", function (remoteStream) {
-          remoteUserVideoRef.current.srcObject = remoteStream;
-        });
-      },
-      function (err) {
-        console.log("Failed to get local stream", err);
-      }
-    );
   };
 
   return (
