@@ -1,6 +1,6 @@
 import RTC from "../libs/rtc";
 import Peer from "peerjs";
-import { Input, Button } from "@mui/material";
+import { Input, Button, Container } from "@mui/material";
 import randomWords from "random-words";
 
 import { useState, useEffect, useRef } from "react";
@@ -74,7 +74,7 @@ export default function Room(props) {
   };
 
   return (
-    <div>
+    <>
       <h3>My Peer id is {peerId}</h3>
       <Input
         value={remotePeerIdValue}
@@ -101,6 +101,6 @@ export default function Room(props) {
         autoPlay="true"
         controls={false}
       />
-    </div>
+    </>
   );
 }
