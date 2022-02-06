@@ -4,18 +4,28 @@ import styles from "../styles/Home.module.css";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
 import RTC from "../libs/rtc";
+import { Button } from "@mui/material";
+import randomWords from "random-words";
+import { useRouter } from "next/router";
 
 const Room = dynamic(() => import("../components/Room"), {
   ssr: false,
 });
 
 export default function Home() {
+  const router = useRouter();
   // useEffect(() => {
   //   import("peerjs").then(({ default: Peer }) => {
   //     let peer = RTC.initChannel();
   //     console.log(peer);
   //   });
   // }, []);
+
+  function newRoom(e) {
+    const newRoomId = randomWords({ exactly: 3, join: "-" });
+    e.preventDefault();
+    router.push("./" + newRoomId);
+  }
 
   return (
     <div className={styles.container}>
@@ -25,7 +35,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <h1>Hello</h1>
-      <Room />
+      <Button onClick={newRoom} variant="outlined">
+        Create New Room
+      </Button>
     </div>
   );
 }
