@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from "react";
 
 export default function Room(props) {
   const currentUserVideoRef = useRef(null);
-  const [peerId, setPeerId] = useState("");
+  const [peerId, setPeerId] = useState(randomWords({ exactly: 1 })[0]);
   const remoteUserVideoRef = useRef(null);
   const [isCaller, setIsCaller] = useState(false);
   const peerInstance = useRef(null);
@@ -32,6 +32,8 @@ export default function Room(props) {
     }
   }
 
+  //Starts own camera and microphone
+
   useEffect(() => {
     async function startMedia() {
       const stream = await getMedia();
@@ -42,9 +44,7 @@ export default function Room(props) {
 
   //Creates new Peer
   useEffect(() => {
-    let newPeerId = randomWords({ exactly: 1 });
-    setPeerId(newPeerId);
-    const peer = new Peer(newPeerId);
+    const peer = new Peer(peerId);
     peerInstance.current = peer;
 
     peer.on("open", () => {
@@ -73,9 +73,25 @@ export default function Room(props) {
     });
   };
 
+  //Updates Room to contain PeerId in DynamoDB
+
+  useEffect(async () => {
+    try {
+      if (props.roomId) {
+        const res = await fetch(`/api/rooms/${props.roomId}`, {
+          method: "PUT",
+          body: JSON.stringify({ personId: peerId }),
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }, [props.roomId]);
+
   return (
     <>
       <h3>My Peer id is {peerId}</h3>
+      <h2>My room Id is {props.roomId}</h2>
       <Input
         value={remotePeerIdValue}
         onChange={(e) => {

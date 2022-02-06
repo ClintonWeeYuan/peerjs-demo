@@ -16,7 +16,6 @@ export default function Channel() {
   return (
     <Container>
       <Room roomId={roomId} />
-      <p>The room id is {roomId}</p>
     </Container>
   );
 }
