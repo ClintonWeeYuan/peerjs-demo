@@ -2,10 +2,11 @@ import RTC from "../libs/rtc";
 import Peer from "peerjs";
 import randomWords from "random-words";
 
-export default function Room() {
-  let newId = randomWords({ exactly: 3, join: "-" });
-  let peer = new Peer(newId);
-  console.log(peer.id);
+export default function Room(props) {
+  let peer = new Peer(props.roomId);
+  peer.on("open", () => {
+    console.log("Peer is opened. The id is " + peer.id);
+  });
 
   return <div>Yoyyo</div>;
 }
