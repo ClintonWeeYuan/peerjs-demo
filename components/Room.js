@@ -17,8 +17,12 @@ export default function Room(props) {
 
   async function getMedia() {
     let stream = null;
+    var getUserMedia =
+      navigator.mediaDevices.getUserMedia ||
+      navigator.mediaDevices.webkitGetUserMedia ||
+      navigator.mediaDevices.mozGetUserMedia;
     try {
-      stream = await navigator.mediaDevices.getUserMedia({
+      stream = await getUserMedia({
         video: true,
         audio: true,
       });
