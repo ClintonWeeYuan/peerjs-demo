@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     try {
       const Item = await db.send(new GetItemCommand(params));
 
-      res.status(200).send(Item.Item);
+      res.status(200).send(Item.Item.personId.SS);
     } catch (err) {
       console.log(err);
       res.statusCode = 500;
