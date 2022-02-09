@@ -2,9 +2,9 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import RTC from "../libs/rtc";
-import { Button } from "@mui/material";
+import { Button, Input } from "@mui/material";
 import randomWords from "random-words";
 import { useRouter } from "next/router";
 
@@ -20,6 +20,8 @@ export default function Home() {
   //     console.log(peer);
   //   });
   // }, []);
+
+  const [input, setInput] = useState("");
 
   function newRoom(e) {
     const newRoomId = randomWords({ exactly: 3, join: "-" });

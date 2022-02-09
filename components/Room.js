@@ -3,19 +3,43 @@ import Peer from "peerjs";
 import { Input, Button, Container, Grid } from "@mui/material";
 import randomWords from "random-words";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useReducer } from "react";
+import io from "socket.io-client";
 
+let socket;
 export default function Room(props) {
   const currentUserVideoRef = useRef(null);
   const [peerId, setPeerId] = useState(randomWords({ exactly: 1 })[0]);
-  const remoteUserVideoRef = [];
-  for (const i = 0; i < 10; i++) {
-    remoteUserVideoRef[i] = useRef(null);
-  }
+  const [remoteId, setRemoteId] = useState([]);
+
+  const remoteUserVideoRef = useRef([]);
 
   const [isCaller, setIsCaller] = useState(false);
   const peerInstance = useRef(null);
   const [remotePeerIdValue, setRemotePeerIdValue] = useState("");
+
+  //Initialize Socket.io
+  useEffect(() => socketInitializer(), [socket]);
+
+  const socketInitializer = async () => {
+    await fetch("/api/socket");
+    socket = io();
+
+    socket.on("connect", () => {
+      console.log("connected");
+    });
+
+    socket.on("incoming-peer", (msg) => {
+      console.log(msg);
+      setRemoteId((prev) => [...prev, msg]);
+      console.log(remoteId);
+    });
+  };
+
+  useEffect(() => {
+    if (socket) {
+    }
+  });
 
   //Define getUserMedia function
 
@@ -53,6 +77,7 @@ export default function Room(props) {
 
     peer.on("open", () => {
       console.log(peer.id);
+      peerId && socket && socket.emit("new-peer", peerId);
     });
 
     peer.on("call", async function (call) {
@@ -60,10 +85,17 @@ export default function Room(props) {
       const stream = await getMedia();
       call.answer(stream);
       call.on("stream", function (remoteStream) {
-        remoteUserVideoRef[0].current.srcObject = remoteStream;
+        const video = document.createElement("video");
+        video.srcObject = remoteStream;
+        video.autoplay = true;
+        video.width = "500px";
+        video.height = "200px";
+
+        const container = document.getElementById("container");
+        container.appendChild(video);
       });
     });
-  }, []);
+  }, [peerId]);
 
   //Call Function
 
@@ -73,7 +105,7 @@ export default function Room(props) {
     const stream = await getMedia();
     const call = peerInstance.current.call(remotePeerId, stream);
     call.on("stream", function (remoteStream) {
-      remoteRef.current.srcObject = remoteStream;
+      remoteUserVideoRef.push(remoteStream);
     });
   };
 
@@ -118,8 +150,33 @@ export default function Room(props) {
       ></Input>
       <Button onClick={() => call(remotePeerIdValue)}>Call</Button>
       <Button onClick={() => callEveryone()}>Call Everyone</Button>
-
-      <Grid container spacing={2}>
+      <Button onClick={() => addStuff()}>Add Stuff</Button>\
+      {remoteId.map((thing) => (
+        <div>
+          <video
+            playsInline
+            ref={currentUserVideoRef}
+            width="500px"
+            height="200px"
+            autoPlay="true"
+            controls={false}
+            muted
+          />
+        </div>
+      ))}
+      <div style={{ border: "1px solid red" }} id="container">
+        <video
+          id="userVideo"
+          playsInline
+          ref={currentUserVideoRef}
+          width="500px"
+          height="200px"
+          autoPlay="true"
+          controls={false}
+          muted
+        />
+      </div>
+      {/* <Grid container spacing={2}>
         <Grid item xs={4}>
           <video
             playsInline
@@ -181,7 +238,7 @@ export default function Room(props) {
             controls={false}
           />
         </Grid>
-      </Grid>
+      </Grid> */}
     </>
   );
 }
